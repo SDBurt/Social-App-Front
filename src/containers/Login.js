@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types"
-import withStyles from "@material-ui/core/styles/withStyles"
 
 // MUI
 import Grid from "@material-ui/core/Grid";
+import withStyles from "@material-ui/core/styles/withStyles"
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -35,7 +35,7 @@ export class Login extends Component {
         return this.state.email.length > 0 && this.state.password.length > 0;
     }
 
-    handleSubmit = async (event) => {
+    handleSubmit = (event) => {
         event.preventDefault();
 
         const userData = {
@@ -45,7 +45,7 @@ export class Login extends Component {
         console.log(
             [userData.email, userData.password]
         )
-        await loginUser(userData, this.props.history);
+        this.props.loginUser(userData, this.props.history);
     };
 
 
@@ -122,6 +122,7 @@ export class Login extends Component {
 }
 
 Login.propTypes = {
+    loginUser: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     ui: PropTypes.object.isRequired
@@ -132,4 +133,8 @@ const mapStateToProps = state => ({
     ui: state.ui
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(Login));
+const mapActionsToProps = {
+    loginUser
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Login));

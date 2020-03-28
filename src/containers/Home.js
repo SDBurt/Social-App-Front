@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 export class Home extends Component {
     render() {
 
-        const { loading } = this.props.data;
+        // const { loading } = this.props.data;
 
         return (
             <div className="Home" >

@@ -9,27 +9,37 @@ import {
     SET_AUTHENTICATING,
 } from '../types';
 
-export const loginUser = async (userData, history) => async dispatch => {
+export const loginUser = (userData, history) => dispatch => {
     dispatch({ type: LOADING_UI });
-    try {
-        await Auth.signIn(userData.email, userData.password);
-        dispatch({ type: SET_AUTHENTICATED })
-        dispatch({ type: CLEAR_ERRORS });
-        history.push('/')
-    } catch (err) {
-        dispatch({
-            type: SET_ERRORS,
-            payload: err.response.data
+    Auth.signIn(userData.email, userData.password)
+        .then(res => {
+            console.log(res);
+            dispatch({ type: SET_AUTHENTICATED })
+            dispatch({ type: CLEAR_ERRORS });
+            history.push('/')
+        })
+        .catch((err) => {
+            console.error(err);
+            // dispatch({
+            //     type: SET_ERRORS,
+            //     payload: err
+            // });
         });
-    }
-
-
 };
 
-export const logoutUsaer = async () => async dispatch => {
+export const logoutUser = (history) => dispatch => {
     dispatch({ type: LOADING_UI });
-    await Auth.signOut();
-    dispatch({ type: SET_UNAUTHENTICATED });
+    Auth.signOut()
+        .then(res => {
+            console.log(res);
+            dispatch({ type: SET_UNAUTHENTICATED });
+            dispatch({ type: CLEAR_ERRORS });
+            history.push('/')
+        })
+        .catch(err => {
+            console.error(err);
+        });
+
 }
 
 export const signupUser = (userData) => dispatch => {
@@ -52,8 +62,11 @@ export const signupUser = (userData) => dispatch => {
 export const confirmSignupUser = (userData, confirmationCode) => dispatch => {
     dispatch({ type: LOADING_UI });
     Auth.confirmSignUp(userData.email, confirmationCode)
-        .then((data) => {
-            console.log(data);
+        .then((res) => {
+            console.log(res);
+
+            // confirmed, therefore create user in users table
+
             dispatch({ type: CLEAR_ERRORS })
         })
         .catch((err) => {
