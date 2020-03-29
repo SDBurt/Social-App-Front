@@ -1,5 +1,5 @@
 // AWS
-import { Auth } from "aws-amplify";
+import { Auth, API } from "aws-amplify";
 import {
     SET_ERRORS,
     CLEAR_ERRORS,
@@ -20,10 +20,10 @@ export const loginUser = (userData, history) => dispatch => {
         })
         .catch((err) => {
             console.error(err);
-            // dispatch({
-            //     type: SET_ERRORS,
-            //     payload: err
-            // });
+            dispatch({
+                type: SET_ERRORS,
+                payload: err.message
+            });
         });
 };
 
@@ -38,6 +38,10 @@ export const logoutUser = (history) => dispatch => {
         })
         .catch(err => {
             console.error(err);
+            dispatch({
+                type: SET_ERRORS,
+                payload: err.message
+            });
         });
 
 }
@@ -54,9 +58,15 @@ export const signupUser = (userData) => dispatch => {
             console.error(err);
             dispatch({
                 type: SET_ERRORS,
-                payload: err
+                payload: err.message
             });
         });
+}
+
+function createUser(userData) {
+    return API.post("users", "/users", {
+        body: userData
+    });
 }
 
 export const confirmSignupUser = (userData, confirmationCode) => dispatch => {
@@ -66,19 +76,34 @@ export const confirmSignupUser = (userData, confirmationCode) => dispatch => {
             console.log(res);
 
             // confirmed, therefore create user in users table
-
+            createUser(
+                {
+                    handle: userData.handle,
+                    email: userData.email
+                }
+            )
             dispatch({ type: CLEAR_ERRORS })
+
+            Auth.signIn(userData.email, userData.password)
+                .then((data) => {
+                    console.log(data);
+                    dispatch({ type: SET_AUTHENTICATED })
+                })
+                .catch((err) => {
+                    console.error(err);
+                    dispatch({
+                        type: SET_ERRORS,
+                        payload: err.message
+                    });
+                });
         })
         .catch((err) => {
             console.error(err);
+            dispatch({
+                type: SET_ERRORS,
+                payload: err.message
+            });
         });
-    Auth.signIn(userData.email, userData.password)
-        .then((data) => {
-            console.log(data);
-            dispatch({ type: SET_AUTHENTICATED })
-        })
-        .catch((err) => {
-            console.error(err);
-        });
+
 
 }

@@ -11,7 +11,7 @@ import {
 
 const initialState = {
     posts: [],
-    scream: {},
+    post: {},
     loading: false
 };
 
@@ -31,23 +31,23 @@ export default function (state = initialState, action) {
         case SET_POST:
             return {
                 ...state,
-                scream: action.payload
+                post: action.payload
             };
         case LIKE_POST:
         case UNLIKE_POST:
             let index = state.posts.findIndex(
-                (scream) => scream.screamId === action.payload.screamId
+                (post) => post.postId === action.payload.postId
             );
             state.posts[index] = action.payload;
-            if (state.scream.screamId === action.payload.screamId) {
-                state.scream = action.payload;
+            if (state.post.postId === action.payload.postId) {
+                state.post = action.payload;
             }
             return {
                 ...state
             };
         case DELETE_POST:
             index = state.posts.findIndex(
-                (scream) => scream.screamId === action.payload
+                (post) => post.postId === action.payload
             );
             state.posts.splice(index, 1);
             return {
@@ -61,9 +61,9 @@ export default function (state = initialState, action) {
         case SUBMIT_COMMENT:
             return {
                 ...state,
-                scream: {
-                    ...state.scream,
-                    comments: [action.payload, ...state.scream.comments]
+                post: {
+                    ...state.post,
+                    comments: [action.payload, ...state.post.comments]
                 }
             };
         default:
