@@ -42,6 +42,13 @@ export default {
             marginTop: 20,
             position: "relative"
         }
-    }
+    },
 
+    Errors: {
+        customError: {
+            color: 'red',
+            fontSize: '0.8rem',
+            marginTop: 10
+        }
+    }
 }

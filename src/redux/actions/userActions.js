@@ -9,6 +9,25 @@ import {
     SET_AUTHENTICATING,
 } from '../types';
 
+function createUser(userData) {
+    API.post("social", "/user", {
+        body: {
+            handle: this.state.handle,
+            email: this.state.email
+        }
+    })
+        .then(res => {
+            console.log(res);
+        })
+        .catch(err => {
+            console.error(err)
+        });
+}
+
+function getUser(handle) {
+    return API.get("social", `/user/${handle}`);
+}
+
 export const loginUser = (userData, history) => dispatch => {
     dispatch({ type: LOADING_UI });
     Auth.signIn(userData.email, userData.password)
@@ -22,7 +41,7 @@ export const loginUser = (userData, history) => dispatch => {
             console.error(err);
             dispatch({
                 type: SET_ERRORS,
-                payload: err.message
+                payload: { general: err.message }
             });
         });
 };
@@ -40,7 +59,7 @@ export const logoutUser = (history) => dispatch => {
             console.error(err);
             dispatch({
                 type: SET_ERRORS,
-                payload: err.message
+                payload: { general: err.message }
             });
         });
 
@@ -48,6 +67,32 @@ export const logoutUser = (history) => dispatch => {
 
 export const signupUser = (userData) => dispatch => {
     dispatch({ type: LOADING_UI });
+
+    getUser(userData.handle)
+        .then(res => {
+            console.log('in here')
+            dispatch({
+                type: SET_ERRORS,
+                payload: { handle: 'Handle already exists' }
+            });
+        })
+        .catch(err => {
+            Auth.signUp(userData.email, userData.password)
+                .then((data) => {
+                    console.log(data);
+                    dispatch({ type: CLEAR_ERRORS })
+                    dispatch({ type: SET_AUTHENTICATING })
+                })
+                .catch((err) => {
+                    console.error(err);
+                    dispatch({
+                        type: SET_ERRORS,
+                        payload: { general: err.message }
+                    });
+                });
+        })
+
+
     Auth.signUp(userData.email, userData.password)
         .then((data) => {
             console.log(data);
@@ -58,15 +103,9 @@ export const signupUser = (userData) => dispatch => {
             console.error(err);
             dispatch({
                 type: SET_ERRORS,
-                payload: err.message
+                payload: { general: err.message }
             });
         });
-}
-
-function createUser(userData) {
-    return API.post("users", "/users", {
-        body: userData
-    });
 }
 
 export const confirmSignupUser = (userData, confirmationCode) => dispatch => {
@@ -82,18 +121,18 @@ export const confirmSignupUser = (userData, confirmationCode) => dispatch => {
                     email: userData.email
                 }
             )
-            dispatch({ type: CLEAR_ERRORS })
 
             Auth.signIn(userData.email, userData.password)
                 .then((data) => {
                     console.log(data);
                     dispatch({ type: SET_AUTHENTICATED })
+                    dispatch({ type: CLEAR_ERRORS })
                 })
                 .catch((err) => {
                     console.error(err);
                     dispatch({
                         type: SET_ERRORS,
-                        payload: err.message
+                        payload: { general: err.message }
                     });
                 });
         })
@@ -101,7 +140,7 @@ export const confirmSignupUser = (userData, confirmationCode) => dispatch => {
             console.error(err);
             dispatch({
                 type: SET_ERRORS,
-                payload: err.message
+                payload: { general: err.message }
             });
         });
 

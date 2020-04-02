@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { validateSignupData, validateConfirmationSignupData } from '../util/validators'
 
 // MUI Stuff
 import Grid from '@material-ui/core/Grid';
@@ -14,11 +15,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { connect } from 'react-redux';
 import { signupUser, confirmSignupUser } from '../redux/actions/userActions';
 
-
 const styles = (theme) => ({
     ...theme.InputForm,
     ...theme.Buttons,
-    ...theme.Banner
+    ...theme.Banner,
+    ...theme.Errors
 });
 
 class Signup extends Component {
@@ -34,9 +35,6 @@ class Signup extends Component {
             userData: {}
         };
 
-        this.handleConfirmationSubmit = this.handleConfirmationSubmit.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleChange = this.handleChange.bind(this);
     }
     componentWillReceiveProps(nextProps) {
         if (nextProps.ui.errors) {
@@ -47,10 +45,6 @@ class Signup extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
 
-        this.setState({
-            loading: true
-        });
-
         const newUserData = {
             email: this.state.email,
             password: this.state.password,
@@ -58,30 +52,22 @@ class Signup extends Component {
             handle: this.state.handle
         };
 
-        this.props.signupUser(newUserData);
+        this.setState({ errors: validateSignupData(newUserData) });
+        if (!this.state.errors) {
+            this.props.signupUser(newUserData);
+        }
 
-        this.setState({
-            userData: newUserData,
-            loading: false,
-        });
     };
 
     handleConfirmationSubmit = (event) => {
         event.preventDefault();
-
-        this.setState({
-            loading: true
-        });
-
-        this.props.confirmSignupUser(this.state.userData, this.state.confirmationCode);
-
-        this.setState({
-            loading: false
-        });
+        this.setState({ errors: validateConfirmationSignupData(this.state) });
+        if (!this.state.errors) {
+            this.props.confirmSignupUser(this.state.userData, this.state.confirmationCode);
+        }
     };
 
     handleChange = (event) => {
-
         this.setState({
             [event.target.name]: event.target.value
         });
