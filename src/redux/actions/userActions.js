@@ -29,6 +29,7 @@ function getUser(handle) {
 }
 
 export const loginUser = (userData, history) => dispatch => {
+    console.log('loginUser');
     dispatch({ type: LOADING_UI });
     Auth.signIn(userData.email, userData.password)
         .then(res => {
@@ -91,21 +92,6 @@ export const signupUser = (userData) => dispatch => {
                     });
                 });
         })
-
-
-    Auth.signUp(userData.email, userData.password)
-        .then((data) => {
-            console.log(data);
-            dispatch({ type: CLEAR_ERRORS })
-            dispatch({ type: SET_AUTHENTICATING })
-        })
-        .catch((err) => {
-            console.error(err);
-            dispatch({
-                type: SET_ERRORS,
-                payload: { general: err.message }
-            });
-        });
 }
 
 export const confirmSignupUser = (userData, confirmationCode) => dispatch => {

@@ -42,6 +42,22 @@ class Signup extends Component {
         }
     }
 
+    validateForm = () => {
+        return (
+            this.state.email.length > 0 &&
+            this.state.password.length > 0 &&
+            this.state.confirmPassword.length > 0 &&
+            this.state.handle.length > 0
+        );
+    }
+
+    validateConfirmation = () => {
+        return (
+            this.state.confirmationCode.length > 0
+        );
+    }
+
+
     handleSubmit = (event) => {
         event.preventDefault();
 
@@ -53,7 +69,8 @@ class Signup extends Component {
         };
 
         this.setState({ errors: validateSignupData(newUserData) });
-        if (!this.state.errors) {
+
+        if (Object.keys(this.state.errors).length === 0) {
             this.props.signupUser(newUserData);
         }
 
@@ -62,7 +79,7 @@ class Signup extends Component {
     handleConfirmationSubmit = (event) => {
         event.preventDefault();
         this.setState({ errors: validateConfirmationSignupData(this.state) });
-        if (!this.state.errors) {
+        if (Object.keys(this.state.errors).length === 0) {
             this.props.confirmSignupUser(this.state.userData, this.state.confirmationCode);
         }
     };
@@ -112,7 +129,7 @@ class Signup extends Component {
                                 variant="contained"
                                 color="primary"
                                 className={classes.button}
-                                disabled={loading}
+                                disabled={loading || !this.validateConfirmation()}
                             >
                                 Verify
                   {loading && (
@@ -194,7 +211,7 @@ class Signup extends Component {
                                 variant="contained"
                                 color="primary"
                                 className={classes.button}
-                                disabled={loading}
+                                disabled={loading || !this.validateForm()}
                             >
                                 SignUp
                   {loading && (
@@ -203,7 +220,7 @@ class Signup extends Component {
                             </Button>
                             <br />
                             <small>
-                                Already have an account ? Login <Link to="/login">here</Link>
+                                Already have an account? Login <Link to="/login">here</Link>
                             </small>
                         </form>
                     </Grid>

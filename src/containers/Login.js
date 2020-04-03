@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types"
-
+import { validateLoginData } from '../util/validators'
 // MUI
 import Grid from "@material-ui/core/Grid";
 import withStyles from "@material-ui/core/styles/withStyles"
@@ -31,6 +31,12 @@ export class Login extends Component {
         };
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.ui.errors) {
+            this.setState({ errors: nextProps.ui.errors });
+        }
+    }
+
     validateForm = () => {
         return this.state.email.length > 0 && this.state.password.length > 0;
     }
@@ -42,17 +48,17 @@ export class Login extends Component {
             email: this.state.email,
             password: this.state.password
         }
-        console.log(
-            [userData.email, userData.password]
-        )
-        this.props.loginUser(userData, this.props.history);
+        this.setState({ errors: validateLoginData(userData) });
+        if (Object.keys(this.state.errors).length === 0) {
+            this.props.loginUser(userData, this.props.history);
+        }
     };
 
 
-    handleChange = event => {
+    handleChange = (event) => {
         this.setState({
             [event.target.name]: event.target.value
-        })
+        });
     };
 
     render() {
@@ -111,7 +117,7 @@ export class Login extends Component {
                         </Button>
                         <br />
                         <small>
-                            Don't have an account? Sign up <Link to="'signup">Here</Link>
+                            Don't have an account? Sign up <Link to="/signup">Here</Link>
                         </small>
                     </form>
                 </Grid>
