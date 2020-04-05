@@ -29,10 +29,6 @@ export class Home extends Component {
 
         return (
             <div className="Home" >
-                <div className="lander">
-                    <h1>Mango</h1>
-                    <p>A simple social app</p>
-                </div>
                 <Grid container spacing={6}>
                     <Grid item sm={8} xs={12}>
                         {recentPostsMarkup}

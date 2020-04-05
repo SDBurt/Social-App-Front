@@ -9,8 +9,14 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 
-// React
+// Icons
+import HomeIcon from '@material-ui/icons/Home';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+
+// Components
 import { logoutUser } from '../redux/actions/userActions';
+import NewPost from '../components/NewPost';
+import MyButton from '../util/MyButton'
 
 const styles = (theme) => ({
     ...theme.InputForm,
@@ -37,10 +43,17 @@ class Navbar extends Component {
                     {
                         !loading
                             ? <Fragment>
-                                <Button color="inherit" component={Link} to="/">Home</Button>
+                                <Link to="/">
+                                    <MyButton tip="Home">
+                                        <HomeIcon />
+                                    </MyButton>
+                                </Link>
                                 {authenticated
                                     ? <Fragment>
-                                        <Button color="inherit" onClick={this.handleLogout}>Logout</Button>
+                                        <NewPost />
+                                        <MyButton tip="Logout" onClick={this.handleLogout}>
+                                            <ExitToAppIcon />
+                                        </MyButton>
                                     </Fragment>
                                     : <Fragment>
                                         <Button color="inherit" component={Link} to="/login">Login</Button>
@@ -48,9 +61,7 @@ class Navbar extends Component {
                                     </Fragment>
                                 }</Fragment>
                             : <Fragment></Fragment>
-
                     }
-
                 </Toolbar>
             </AppBar>
         )

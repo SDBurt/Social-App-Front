@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 // MUI
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -20,13 +22,14 @@ import { connect } from 'react-redux';
 
 
 const styles = (theme) => ({
-    ...theme.InputForm,
-    ...theme.Buttons
+    card: {
+        marginBottom: 20
+    }
 });
 
 export class Post extends Component {
     render() {
-
+        dayjs.extend(relativeTime);
         const {
             classes,
             post: {
@@ -39,13 +42,12 @@ export class Post extends Component {
                 commentCount
             },
             user: {
-                authenticated,
-                credentials: { handle }
+                authenticated
             }
         } = this.props;
 
         return (
-            <Card className={classes.post}>
+            <Card className={classes.card}>
                 <CardHeader
                     avatar={
                         <Avatar aria-label="recipe" className={userImage}>
@@ -58,7 +60,7 @@ export class Post extends Component {
                         </IconButton>
                     }
                     title={userHandle}
-                    subheader={createdAt}
+                    subheader={dayjs(createdAt).fromNow()}
                 />
 
                 <CardContent>
@@ -69,11 +71,11 @@ export class Post extends Component {
                 <CardActions disableSpacing>
                     <IconButton aria-label="like post">
                         <FavoriteIcon />
-                        {likeCount}
+                        <Typography variant='subtitle2'>{likeCount}</Typography>
                     </IconButton>
                     <IconButton aria-label="comment on post">
                         <CommentIcon />
-                        {commentCount}
+                        <Typography variant='subtitle2'>{commentCount}</Typography>
                     </IconButton>
                     <IconButton aria-label="share">
                         <ShareIcon />
@@ -86,7 +88,6 @@ export class Post extends Component {
 
 Post.propTypes = {
     user: PropTypes.object.isRequired,
-    posts: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
 }
 

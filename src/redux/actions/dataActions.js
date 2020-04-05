@@ -6,7 +6,7 @@ import {
     // DELETE_POST,
     // SET_ERRORS,
     // POST_POST,
-    // CLEAR_ERRORS,
+    CLEAR_ERRORS,
     // LOADING_UI,
     // SET_POST,
     // STOP_LOADING_UI,
@@ -21,17 +21,21 @@ export const getPosts = () => dispatch => {
     API.get("social", `/posts`)
         .then(res => {
             console.log(res);
-            // dispatch({
-            //     type: SET_POSTS,
-            //     payload: res
-            // });
+            dispatch({
+                type: SET_POSTS,
+                payload: res
+            });
         })
         .catch(err => {
             console.error(err);
-            // dispatch({
-            //     type: SET_POSTS,
-            //     payload: []
-            // });
+            dispatch({
+                type: SET_POSTS,
+                payload: []
+            });
         });
 
 }
+
+export const clearErrors = () => (dispatch) => {
+    dispatch({ type: CLEAR_ERRORS });
+};
