@@ -17,11 +17,23 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { logoutUser } from '../redux/actions/userActions';
 import NewPost from '../components/NewPost';
 import MyButton from '../util/MyButton'
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import Logo from '../images/mango1.png'
 
 const styles = (theme) => ({
     ...theme.InputForm,
     ...theme.Buttons,
-    ...theme.Banner
+    ...theme.Banner,
+    menuButton: {
+        marginRight: theme.spacing(2),
+    },
+    appbar: {
+        flexGrow: 1
+    },
+    title: {
+        flexGrow: 1,
+    },
 })
 
 class Navbar extends Component {
@@ -33,14 +45,21 @@ class Navbar extends Component {
     render() {
 
         const {
+            classes,
             ui: { loading },
             user: { authenticated }
         } = this.props;
 
         return (
-            <AppBar>
-                <Toolbar className="nav-container">
+            <AppBar className={classes.appbar}>
+                <Toolbar position="static">
+                    <img src={Logo} height='50' />
+                    <Typography variant="h6" className={classes.title}>
+                        Mango
+                    </Typography>
+
                     {
+
                         !loading
                             ? <Fragment>
                                 <Link to="/">
