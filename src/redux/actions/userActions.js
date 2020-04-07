@@ -7,25 +7,12 @@ import {
     SET_UNAUTHENTICATED,
     SET_AUTHENTICATED,
     SET_AUTHENTICATING,
+    SET_USER,
+    LOADING_USER
 } from '../types';
 
 function createUser(userData) {
-    API.post("social", "/user", {
-        body: {
-            handle: this.state.handle,
-            email: this.state.email
-        }
-    })
-        .then(res => {
-            console.log(res);
-        })
-        .catch(err => {
-            console.error(err)
-        });
-}
 
-function getUser(handle) {
-    return API.get("social", `/user/${handle}`);
 }
 
 export const loginUser = (userData, history) => dispatch => {
@@ -34,7 +21,14 @@ export const loginUser = (userData, history) => dispatch => {
     Auth.signIn(userData.email, userData.password)
         .then(res => {
             console.log(res);
-            dispatch({ type: SET_AUTHENTICATED })
+            dispatch({
+                type: SET_USER, payload: {
+                    credentials: {
+                        handle: userData.handle,
+                        email: userData.email
+                    }
+                }
+            })
             dispatch({ type: CLEAR_ERRORS });
             history.push('/')
         })
@@ -54,7 +48,7 @@ export const logoutUser = (history) => dispatch => {
             console.log(res);
             dispatch({ type: SET_UNAUTHENTICATED });
             dispatch({ type: CLEAR_ERRORS });
-            history.push('/')
+            history.push('/');
         })
         .catch(err => {
             console.error(err);
@@ -69,20 +63,37 @@ export const logoutUser = (history) => dispatch => {
 export const signupUser = (userData) => dispatch => {
     dispatch({ type: LOADING_UI });
 
-    getUser(userData.handle)
+    API.get("social", `/user/${userData.handle}`)
         .then(res => {
-            console.log('in here')
+            console.log('signup user response: ');
+            console.log(res);
+
             dispatch({
                 type: SET_ERRORS,
                 payload: { handle: 'Handle already exists' }
             });
+
         })
-        .catch(err => {
-            Auth.signUp(userData.email, userData.password)
+        .catch(() => {
+            Auth.signUp({
+                username: userData.email,
+                password: userData.password,
+                attributes: { "custom:handle": userData.handle }
+            })
                 .then((data) => {
                     console.log(data);
-                    dispatch({ type: CLEAR_ERRORS })
-                    dispatch({ type: SET_AUTHENTICATING })
+                    dispatch({ type: CLEAR_ERRORS });
+                    dispatch({ type: SET_AUTHENTICATING });
+
+                    API.post("social", '/user', {
+                        handle: userData.handle,
+                        email: userData.email,
+                        confirmed: false
+                    }).then(res => {
+                        console.log(res);
+                    }).catch(err => {
+                        console.error(err);
+                    });
                 })
                 .catch((err) => {
                     console.error(err);
@@ -94,25 +105,20 @@ export const signupUser = (userData) => dispatch => {
         })
 }
 
-export const confirmSignupUser = (userData, confirmationCode) => dispatch => {
+export const confirmSignupUser = (userData, confirmationCode, history) => dispatch => {
     dispatch({ type: LOADING_UI });
     Auth.confirmSignUp(userData.email, confirmationCode)
         .then((res) => {
             console.log(res);
 
-            // confirmed, therefore create user in users table
-            createUser(
-                {
-                    handle: userData.handle,
-                    email: userData.email
-                }
-            )
+            // TODO: Create confirmation
 
             Auth.signIn(userData.email, userData.password)
                 .then((data) => {
                     console.log(data);
                     dispatch({ type: SET_AUTHENTICATED })
                     dispatch({ type: CLEAR_ERRORS })
+                    history.push('/');
                 })
                 .catch((err) => {
                     console.error(err);
@@ -129,6 +135,20 @@ export const confirmSignupUser = (userData, confirmationCode) => dispatch => {
                 payload: { general: err.message }
             });
         });
-
-
 }
+
+export const getUserData = (userHandle) => (dispatch) => {
+    dispatch({ type: LOADING_USER });
+
+
+    API.get("social", `/auth/${userHandle}`)
+        .then((res) => {
+            dispatch({
+                type: SET_USER,
+                payload: res
+            });
+        })
+        .catch((err) => {
+            console.error(err)
+        });
+};

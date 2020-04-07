@@ -7,7 +7,11 @@ import {
 
 const initialState = {
     authenticated: false,
-    authenticating: false
+    authenticating: false,
+    loading: false,
+    credentials: {},
+    likes: [],
+    notifications: []
 };
 
 export default function (state = initialState, action) {
@@ -15,6 +19,7 @@ export default function (state = initialState, action) {
         case SET_USER:
             return {
                 authenticated: true,
+                authenticating: false,
                 loading: false,
                 ...action.payload
             };

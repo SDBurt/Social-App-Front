@@ -38,6 +38,7 @@ class NewPost extends Component {
         body: '',
         errors: {}
     };
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.ui.errors) {
             this.setState({
@@ -60,13 +61,25 @@ class NewPost extends Component {
     };
     handleSubmit = (event) => {
         event.preventDefault();
-        this.props.NewPost({ body: this.state.body });
+
+        console.log(this.state);
+        console.log(this.props);
+
+        const newPost = {
+            content: this.state.body,
+            userHandle: this.props.user.credentials.handle
+        }
+
+        this.props.newPost(newPost);
     };
     render() {
         const { errors } = this.state;
+
         const {
             classes,
-            ui: { loading }
+            ui: { loading },
+            user: { authenticated,
+                credentials: { handle } }
         } = this.props;
         return (
             <Fragment>
@@ -86,16 +99,16 @@ class NewPost extends Component {
                     >
                         <CloseIcon />
                     </MyButton>
-                    <DialogTitle>New post</DialogTitle>
+                    <DialogTitle>New Post</DialogTitle>
                     <DialogContent>
                         <form onSubmit={this.handleSubmit}>
                             <TextField
                                 name="body"
                                 type="text"
-                                label="New Post"
+                                label="Post Content"
                                 multiline
                                 rows="3"
-                                placeholder="Post at your fellow apes"
+                                placeholder="Lets mango!"
                                 error={errors.body ? true : false}
                                 helperText={errors.body}
                                 className={classes.textField}
@@ -126,16 +139,18 @@ class NewPost extends Component {
 }
 
 NewPost.propTypes = {
-    NewPost: PropTypes.func.isRequired,
+    newPost: PropTypes.func.isRequired,
     clearErrors: PropTypes.func.isRequired,
-    ui: PropTypes.object.isRequired
+    ui: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
-    ui: state.ui
+    ui: state.ui,
+    user: state.user
 });
 
 export default connect(
     mapStateToProps,
-    { NewPost, clearErrors }
+    { newPost, clearErrors }
 )(withStyles(styles)(NewPost));

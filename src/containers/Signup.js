@@ -70,7 +70,9 @@ class Signup extends Component {
 
         this.setState({ errors: validateSignupData(newUserData) });
 
-        if (Object.keys(this.state.errors).length === 0) {
+        if (Object.keys(this.state.errors).length == 0) {
+            this.setState({ userData: newUserData });
+
             this.props.signupUser(newUserData);
         }
 
@@ -80,7 +82,8 @@ class Signup extends Component {
         event.preventDefault();
         this.setState({ errors: validateConfirmationSignupData(this.state) });
         if (Object.keys(this.state.errors).length === 0) {
-            this.props.confirmSignupUser(this.state.userData, this.state.confirmationCode);
+            this.props.confirmSignupUser(this.state.userData, this.state.confirmationCode, this.props.history);
+            this.setState({ userData: {} });
         }
     };
 

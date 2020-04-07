@@ -12,6 +12,7 @@ import { Provider } from "react-redux";
 import store from "./redux/store"
 import themeFile from "./util/theme";
 import { SET_AUTHENTICATED } from './redux/types';
+import { logoutUser, getUserData } from './redux/actions/userActions';
 
 // Other
 import Navbar from "./components/Navbar"
@@ -24,6 +25,7 @@ Auth.currentAuthenticatedUser()
   .then(res => {
     console.log(res);
     store.dispatch({ type: SET_AUTHENTICATED });
+    store.dispatch(getUserData());
   })
   .catch((err) => {
     console.error(err);

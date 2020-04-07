@@ -4,7 +4,7 @@ import {
     UNLIKE_POST,
     LOADING_DATA,
     DELETE_POST,
-    POST_POST,
+    NEW_POST,
     SET_POST,
     SUBMIT_COMMENT
 } from '../types';
@@ -53,7 +53,7 @@ export default function (state = initialState, action) {
             return {
                 ...state
             };
-        case POST_POST:
+        case NEW_POST:
             return {
                 ...state,
                 posts: [action.payload, ...state.posts]
